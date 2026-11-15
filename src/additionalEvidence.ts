@@ -20,8 +20,8 @@ export function checkDataset(kind:DataKind,rows:ParsedRow[]):ImportResult {
   try{
    if(!row.source?.trim())throw new Error('Missing source provenance');
    if(kind==='soil'){number(row,'latitude',-90,90);number(row,'longitude',-180,180);number(row,'depth_cm',0,500);if(!['laboratory','field','soilgrids_model'].includes(row.measurement_type))throw new Error('measurement_type must be laboratory, field, or soilgrids_model');
-    for(const [k,a,b] of [['ph',0,14],['clay_pct',0,100],['sand_pct',0,100],['soc_g_kg',0,2000],['total_n_g_kg',0,300]] as const)if(row[k])number(row,k,a,b);
-    if(!['ph','clay_pct','sand_pct','soc_g_kg','total_n_g_kg'].some(k=>row[k]?.trim()))throw new Error('At least one soil property is required');
+    for(const [k,a,b] of [['ph',0,14],['clay_pct',0,100],['sand_pct',0,100],['soc_g_kg',0,2000],['total_n_g_kg',0,300],['cec_cmol_kg',0,250]] as const)if(row[k])number(row,k,a,b);
+    if(!['ph','clay_pct','sand_pct','soc_g_kg','total_n_g_kg','cec_cmol_kg'].some(k=>row[k]?.trim()))throw new Error('At least one soil property is required');
    }
    if(kind==='trials'){number(row,'yield_kg_ha',0,100000);if(!row.plot_id?.trim()||!row.crop?.trim()||!row.season?.trim()||!row.previous_crop?.trim())throw new Error('Missing experimental identifiers');}
    if(kind==='smap'){if(!calendar(row.date))throw new Error('Invalid date');number(row,'surface',0,1);number(row,'rootzone',0,1);number(row,'latitude',-90,90);number(row,'longitude',-180,180);}

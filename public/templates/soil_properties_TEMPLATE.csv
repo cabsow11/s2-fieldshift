@@ -1,1 +1,1 @@
-latitude,longitude,depth_cm,ph,clay_pct,sand_pct,soc_g_kg,total_n_g_kg,measurement_type,source,sample_date
+latitude,longitude,depth_cm,ph,clay_pct,sand_pct,soc_g_kg,total_n_g_kg,measurement_type,source,sample_date,cec_cmol_kg,ph_q05,ph_q95,soc_g_kg_q05,soc_g_kg_q95
