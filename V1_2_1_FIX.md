@@ -1,0 +1,1 @@
+V1.2.1 — Boundary tie is not a preference reversal. In pairDecision, only interior crossings 0<w<1 are returned. Boundary ties at w=0 or w=1 are returned as null; tests now assert null. Historical NASA data and UI are unchanged. Run npm test and npm run build on Windows.

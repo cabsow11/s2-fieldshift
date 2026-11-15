@@ -1,0 +1,16 @@
+import {describe,it,expect} from 'vitest';
+import {CROP_EVIDENCE,cropKnowledge,historicalSignals,evaluateDocumentedRotation} from './evidenceClimate';
+import type {Field,Rain} from './engine';
+const rain:Rain[]=Array.from({length:45},(_,i)=>({date:new Date(Date.UTC(2024,5,1+i)).toISOString().slice(0,10),power:i%3===0?10:0,imerg:i%5===0?12:0}));
+const field:Field={previous:'Groundnut',soil:'loamy',rainfed:true,seed:{Millet:'yes',Groundnut:'yes',Cowpea:'yes',Sorghum:'yes'}};
+describe('Evidence-grounded agronomy and historical diagnostics',()=>{
+ it('has documented, ID-traceable rule records for all four crops',()=>{expect(CROP_EVIDENCE.length).toBe(8);for(const crop of ['Millet','Groundnut','Cowpea','Sorghum'] as const){const c=cropKnowledge(crop);expect(c.rules.length).toBeGreaterThan(0);expect(c.suitability).toBe('NOT_ESTABLISHED');expect(c.rules.every(r=>r.references.length>0)).toBe(true)}});
+ it('does not claim sorghum or cowpea field yields',()=>{for(const c of ['Sorghum','Cowpea'] as const)expect(cropKnowledge(c).suitability).toBe('NOT_ESTABLISHED')});
+ it('computes source-separated historical diagnostics from real supplied values',()=>{const r=historicalSignals(rain,'2024-06-01',30,1);expect(r.coverage).toBe('COMPLETE');expect(r.windows.power?.wetDays).toBe(10);expect(r.windows.imerg?.wetDays).toBe(6);expect(r.windows.power?.rainMm).toBe(100);expect(r.windows.imerg?.rainMm).toBe(72)});
+ it('rejects inferring coverage beyond the observations',()=>{const r=historicalSignals(rain,'2024-07-10',30,1);expect(r.coverage).toBe('INCOMPLETE');expect(r.windows.power).toBeUndefined()});
+ it('does not turn a studied sequence into a yield advantage',()=>{const r=evaluateDocumentedRotation('Millet','Groundnut',field,rain,'2024-06-01');expect(r.sequenceEvidence).toBe('STUDIED_SYSTEM');expect(r.fieldRecommendation).toBe('WITHHELD');expect(r.stages).toBe('NOT_ASSESSED')});
+ it('keeps order and documentary coverage separate',()=>{const a=evaluateDocumentedRotation('Groundnut','Millet',field,rain,'2024-06-01');const b=evaluateDocumentedRotation('Millet','Cowpea',field,rain,'2024-06-01');expect(a.referenceIds).toContain('L02-002');expect(b.sequenceEvidence).toBe('NOT_ESTABLISHED');expect(b.missing.some(x=>x.includes('Local ordered'))).toBe(true)});
+ it('excludes only explicit seed absence or repeated crops',()=>{const a=evaluateDocumentedRotation('Millet','Millet',field,rain,'2024-06-01');expect(a.hardConstraint).toBe('EXCLUDED');const b=evaluateDocumentedRotation('Millet','Groundnut',{...field,seed:{...field.seed,Groundnut:'no'}},rain,'2024-06-01');expect(b.hardConstraint).toBe('EXCLUDED')});
+ it('preserves unknown soil and missing seed as missing, not factually confirmed',()=>{const a=evaluateDocumentedRotation('Millet','Cowpea',{...field,soil:'unknown',seed:{...field.seed,Cowpea:'unknown'}},rain,'2024-06-01');expect(a.hardConstraint).toBe('NO_KNOWN_EXCLUSION');expect(a.missing).toContain('Cowpea seed confirmation');expect(a.fieldRecommendation).toBe('WITHHELD')});
+ it('maintains explicit historical versus future distinction',()=>{const a=evaluateDocumentedRotation('Millet','Groundnut',field,rain,'2024-06-01');expect(a.why.some(s=>s.includes('conceptual rotation year'))).toBe(true)});
+});

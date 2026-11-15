@@ -1,0 +1,6 @@
+harmony-py>=1.8,<2
+xarray>=2025.1
+netCDF4>=1.7
+numpy>=2
+earthaccess>=0.19
+h5py>=3

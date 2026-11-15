@@ -1,0 +1,33 @@
+
+# Node / build
+node_modules/
+dist/
+coverage/
+.vite/
+.wrangler/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# NASA collection workspace
+earthdata_archive/
+*.nc4
+*.h5
+*.hdf5
+*.rar
+*.zip
+
+# Secrets
+.env
+.env.*
+!.env.example
+.netrc
+*.pem
+*.key
+credentials.json
+
+
+*.tsbuildinfo

@@ -1,0 +1,20 @@
+S2 FIELDSHIFT — CORRECTIF TYPESCRIPT V2.1.4.1
+
+CE CORRECTIF NE SUPPRIME PAS earthdata_archive OU .git.
+
+OPTION RECOMMANDEE :
+1. Ouvrir le ZIP correctif.
+2. Copier le dossier src dans le dossier EXISTANT S2_FieldShift_V2_1_4_ALL_IN_ONE_Harmony_Batch_Resume.
+3. Accepter « Remplacer les fichiers dans la destination ». Cela ne remplace que :
+   src\AdditionalEvidencePanel.tsx
+   src\ClimateAtlas.tsx
+4. Exécuter VALIDER_CORRECTIF.cmd depuis le dossier du projet.
+5. Si le build ET les tests réussissent : git add src/AdditionalEvidencePanel.tsx src/ClimateAtlas.tsx && git commit -m "Fix production TypeScript build"
+
+Pas besoin de réinstaller Python ni de relancer NASA Harmony.
+Conserver earthdata_archive, .git et les données de public/data.
+Éviter npm audit fix --force sans analyse.
+
+Correctifs : Set.size valide au lieu de Array.from(Set).size, suppression des imports TypeScript inutilisés.
+Validation : correspondance des trois erreurs constatées dans le journal Windows.
+La compilation npm n'a pas pu être réalisée dans l'environnement de génération, faute d'accès à l'installation npm. Faire la vérification sur Windows.
